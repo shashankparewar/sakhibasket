@@ -13,6 +13,7 @@ from rest_framework.response import Response
 from .models import Category, Item, Order, OrderItem, Address
 from .serializers import CategorySerializer, ItemSerializer, OrderSerializer
 from .utils.common_utils import CommonUtils
+from .utils.sns_client import SNSClient
 
 
 def index(request):
@@ -91,5 +92,6 @@ class OrderViewSet(mixins.CreateModelMixin,
         order = Order.objects.create(**data)
         order.items.set(order_items)
         order.save()
+        SNSClient.send_sms(order.phone, order.name, order.readable_id)
         return Response(self.get_serializer_class()(order).data)
 
