@@ -1,0 +1,170 @@
+{% verbatim %}
+<div ng-controller="OrderController" ng-init="init()">
+  <uib-accordion close-others="true">
+    <div uib-accordion-group class="panel-default" is-open="status.isFirstOpen">
+      <uib-accordion-heading>
+        Add Products <i class="pull-right glyphicon"
+                        ng-class="{'glyphicon-chevron-down': status.isFirstOpen, 'glyphicon-chevron-right': !status.isFirstOpen}"></i>
+      </uib-accordion-heading>
+      <table class="table">
+        <thead>
+        <tr>
+          <th scope="col">#</th>
+          <th scope="col">Category</th>
+          <th scope="col">Product</th>
+          <th scope="col">Description</th>
+          <th scope="col">Quantity</th>
+          <th scope="col">Price Per Unit</th>
+          <th scope="col">Total Price</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr ng-repeat="row in rows">
+          <td>
+            {{ $index + 1 }}
+          </td>
+          <td>
+            <select ng-options="category as category.display_name for category in categories track by category.id"
+                    ng-model="row.category" ng-change="load_products($index, row.category.id)"></select>
+          </td>
+          <td>
+            <select ng-options="product as (product.name + ', ' + product.description) for product in row.products track by product.id"
+                    ng-model="row.product" ng-change="calculatePrice()"></select>
+          </td>
+          <td>
+            <span>{{ row.product.description }}</span>
+          </td>
+          <td>
+            <input type="number" name="quantity" ng-model="row.quantity" ng-change="calculatePrice()" required>
+          </td>
+          <td>
+            <span>{{ row.product.price }}</span>
+          </td>
+          <td>
+            <span>{{ (row.product.price * row.quantity) || 0 }}</span>
+          </td>
+        </tr>
+        </tbody>
+        <tbody>
+        <tr>
+          <td></td>
+          <td></td>
+          <td></td>
+          <td></td>
+          <td></td>
+          <td>Total:</td>
+          <td><span>{{ total_price }}</span></td>
+        </tr>
+        </tbody>
+      </table>
+      <div class="row">
+        <div class="col-md-offset-4 col-md-4">
+          <button ng-click="openPersonal()" class="btn btn-primary upload-btn center-block"
+                  ng-disabled="total_price==0">
+            <i class="fa fa-check"></i> Next
+          </button>
+        </div>
+      </div>
+    </div>
+    <div uib-accordion-group class="panel-default" is-open="!status.isFirstOpen">
+      <uib-accordion-heading>
+        Personal Details <i class="pull-right glyphicon"
+                            ng-class="{'glyphicon-chevron-down': !status.isFirstOpen, 'glyphicon-chevron-right': status.isFirstOpen}"></i>
+      </uib-accordion-heading>
+      <div class="row" style="padding:5px;font-size: 16px; font-weight: bold">
+        <div class="panel panel-info">
+          <div class="panel-heading">
+            <h3 class="panel-title">Personal Details</h3>
+          </div>
+          <div class="panel-body">
+            <div class="row">
+              <div class="col-md-4">
+                <label for="name">Name</label>
+                <input name="name" type="text" name="name" ng-model="order.name" class="form-control" required>
+              </div>
+              <div class="col-md-4">
+                <label for="email">Email</label>
+                <input name="email" type="text" ng-model="order.email" class="form-control" required>
+              </div>
+              <div class="col-md-4">
+                <label for="email">Phone</label>
+                <input name="phone" type="number" ng-model="order.phone" class="form-control" required>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="panel panel-info">
+          <div class="panel-heading">
+            <h3 class="panel-title">Delivery Details</h3>
+          </div>
+          <div class="panel-body">
+            <div class="row">
+              <div class="col-md-4">
+                <label for="orderedDate">Order Date</label>
+                <p class="input-group">
+                  <input type="text" class="form-control" uib-datepicker-popup ng-model="order.ordered_date"
+                         is-open="popup.opened"
+                         datepicker-options="options" ng-required="true" close-text="Close" ng-focus="openCalendar()"/>
+                  <span class="input-group-btn">
+                    <button type="button" class="btn btn-default" ng-click="openCalendar()"><i
+                      class="glyphicon glyphicon-calendar"></i></button>
+                  </span>
+                </p>
+              </div>
+            </div>
+            <div class="row">
+              <div class="col-md-4">
+                <label for="street_address">Street Address</label>
+                <textarea name='street_address' ng-model="order.address.street_address" ng-maxlength="216"
+                          ng-trim="true" style="margin: 0px;height: 173px;width: 356px;" required></textarea>
+              </div>
+              <div class="col-md-4">
+                <label for="landmark">Landmark</label>
+                <input name="name" type="text" name="landmark" ng-model="order.address.landmark" class="form-control">
+              </div>
+              <div class="col-md-4">
+                <label for="city">City(limited to Ranchi)</label>
+                <input name="name" type="text" name="city" ng-model="order.address.city" class="form-control"
+                       disabled="true" required>
+              </div>
+              <div class="col-md-4">
+                <label for="state">State(limited to Jharkhand)</label>
+                <input name="name" type="text" name="state" ng-model="order.address.state" class="form-control"
+                       disabled="true" required>
+              </div>
+              <div class="col-md-4">
+                <label for="pincode">Pincode</label>
+                <input name="name" type="text" name="pincode" ng-model="order.address.zip" class="form-control"
+                       required>
+              </div>
+            </div>
+            <div class="row">
+              <div class="col-md-4" style="color: #203784">
+                <h5>Payment</h5>
+              </div>
+            </div>
+            <div class="row padded-label-right" style="margin-top: 1%">
+              <div class="col-md-4">
+                <form>
+                  <label for="payment">
+                    <input type="radio" ng-model="order.payment" ng-value="cash"> Cash On Delivery
+                  </label>
+                </form>
+              </div>
+            </div>
+
+
+            <div class="row">
+              <div class="col-md-offset-4 col-md-4">
+                <button ng-click="placeOrder()" class="btn btn-primary upload-btn center-block">
+                  <i class="fa fa-check"></i> Place Order
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </uib-accordion>
+</div>
+{% endverbatim %}

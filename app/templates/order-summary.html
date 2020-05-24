@@ -1,0 +1,114 @@
+{% verbatim %}
+<div ng-controller="OrderSummaryController" ng-init="init()">
+  <uib-accordion close-others="false">
+    <div uib-accordion-group class="panel-default" is-open="status.isFirstOpen">
+      <uib-accordion-heading>
+        Add Products <i class="pull-right glyphicon"
+                        ng-class="{'glyphicon-chevron-down': status.isFirstOpen, 'glyphicon-chevron-right': !status.isFirstOpen}"></i>
+      </uib-accordion-heading>
+      <table class="table">
+        <thead>
+        <tr>
+          <th scope="col">#</th>
+          <th scope="col">Product</th>
+          <th scope="col">Description</th>
+          <th scope="col">Quantity</th>
+          <th scope="col">Price Per Unit</th>
+          <th scope="col">Total Price</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr ng-repeat="row in rows">
+          <td>
+            {{ $index + 1 }}
+          </td>
+          <td>
+            <span>{{ row.item.name }}</span>
+          </td>
+          <td>
+            <span>{{ row.item.description }}</span>
+          </td>
+          <td>
+            <span>{{ row.quantity }}</span>
+          </td>
+          <td>
+            <span>{{ row.item.price }}</span>
+          </td>
+          <td>
+            <span>{{ (row.item.price * row.quantity) || 0 }}</span>
+          </td>
+        </tr>
+        </tbody>
+        <tbody>
+        <tr>
+          <td></td>
+          <td></td>
+          <td></td>
+          <td></td>
+          <td>Total:</td>
+          <td><span>{{ total_price }}</span></td>
+        </tr>
+        </tbody>
+      </table>
+    </div>
+    <div uib-accordion-group class="panel-default" is-open="status.isSecOpen">
+      <uib-accordion-heading>
+        Personal Details <i class="pull-right glyphicon"
+                            ng-class="{'glyphicon-chevron-down': status.isSecOpen, 'glyphicon-chevron-right': !status.isSecOpen}"></i>
+      </uib-accordion-heading>
+      <div class="row" style="padding:5px;font-size: 16px; font-weight: bold">
+        <div class="panel panel-info">
+          <div class="panel-heading">
+            <h3 class="panel-title">Personal Details</h3>
+          </div>
+          <div class="panel-body">
+            <div class="row">
+              <div class="col-md-4">
+                <label for="name">Name: </label>
+                <span>{{ order.name }}</span>
+              </div>
+              <div class="col-md-4">
+                <label for="email">Email: </label>
+                <span>{{ order.email }}</span>
+              </div>
+              <div class="col-md-4">
+                <label for="phone">Phone: </label>
+                <span>{{ order.phone }}</span>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="panel panel-info">
+          <div class="panel-heading">
+            <h3 class="panel-title">Delivery Details: </h3>
+          </div>
+          <div class="panel-body">
+            <div class="row">
+              <div class="col-md-4">
+                <label for="orderedDate">Order Date: </label>
+                <span>{{ order.ordered_date | date:'EEEE, d MMMM, yyyy' }}</span>
+              </div>
+            </div>
+            <div class="row">
+              <div class="col-md-4">
+                <label for="street_address">Address: </label><br>
+                {{  order.shipping_address.street_address }}, <br>
+                {{  order.shipping_address.city }}, <br>
+                {{  order.shipping_address.state }}, <br>
+               {{  order.shipping_address.zip }}, <br>
+                Landmark: {{  order.shipping_address.landmark }} <br>
+              </div>
+            </div>
+            <div class="row">
+              <div class="col-md-4" style="color: #203784">
+                <label for="payment">Payment: </label>
+                <span>{{  order.payment }}</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </uib-accordion>
+</div>
+{% endverbatim %}
